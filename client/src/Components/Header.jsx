@@ -10,7 +10,7 @@ const Header = () => {
   return (
     <Navbar bg="light" expand="lg">
       <Container fluid>
-        <Link to = "/" >
+        <Link to = "/home" >
             <Navbar.Brand href="#">TBLOG</Navbar.Brand>
         </Link>
         <Navbar.Toggle aria-controls="navbarScroll" />
@@ -36,15 +36,7 @@ const Header = () => {
               Link
             </Nav.Link>
           </Nav> */}
-          <Form className="d-flex">
-            <Form.Control
-              type="search"
-              placeholder="Search"
-              className="me-2"
-              aria-label="Search"
-            />
-            <Button variant="outline-success">Search</Button>
-          </Form>
+          
         </Navbar.Collapse>
       </Container>
     </Navbar>

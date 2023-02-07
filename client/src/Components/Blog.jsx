@@ -47,8 +47,10 @@ const Blog = ({data}) => {
             <Card.Text>
               {data.description}
             </Card.Text>
+            <div style={{display: "flex", gap : '2px', 'flex-wrap' : "wrap" }} >
             <FaTrash style={{"margin-right" : "10px" }} onClick = {() => handleDeleteProject()} variant="danger">Delete</FaTrash>
             <FaRegEdit onClick = {() => handleShowUpdate()} variant="danger">Update</FaRegEdit>
+            </div>
           </Card.Body>
         </Card>  
      

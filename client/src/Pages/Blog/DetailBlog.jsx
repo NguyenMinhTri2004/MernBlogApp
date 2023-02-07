@@ -4,9 +4,10 @@ import { GET_BLOG } from '../../queries/blogQueries';
 import { useParams } from 'react-router-dom'
 
 const DetailBlog = () => {
+  
 const { id } = useParams();
 
-const { loading, error, data } = useQuery(GET_BLOG, { variables: { id } });;
+const { loading, error, data } = useQuery(GET_BLOG, { variables: { id } });
 
 
   return (

@@ -20,7 +20,6 @@ const GET_BLOG = gql`
       image
       user {
         id
-        name
         email
       }
     }

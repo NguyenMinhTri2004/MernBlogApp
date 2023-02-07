@@ -1,6 +1,6 @@
 const Blog = require('../models/Blog');
 const User = require('../models/User');
-
+const argon2 = require('argon2');
 
 const {
     GraphQLObjectType,
@@ -34,8 +34,8 @@ const {
     name: 'User',
     fields: () => ({
       id: { type: GraphQLID },
-      name: { type: GraphQLString },
       email: { type: GraphQLString },
+      password: { type: GraphQLString },
     }),
   });
 
@@ -75,38 +75,81 @@ const {
   // Mutations
   const mutation = new GraphQLObjectType({
     name: 'Mutation',
-    fields: {
+    fields : {
       // Add a client
-      addUser: {
+      addUser : {
         type: UserType,
         args: {
-          name: { type: GraphQLNonNull(GraphQLString) },
           email: { type: GraphQLNonNull(GraphQLString) },
+          password: { type: GraphQLNonNull(GraphQLString) },
         },
-        resolve(parent, args) {
+        async resolve  (parent, args)  {
+
+    
+          const existingUser = await User.findOne({
+              email : args.email,
+          })
+
+          // console.log(existingUser)
+
+          if (existingUser) {
+            return {
+              code: 400,
+              success: false,
+              message: 'Duplicated username or email',
+            }
+          }
+          
+          const hashedPassword = await argon2.hash(args.password)
+
           const user = new User({
-            name: args.name,
             email: args.email,
+            password : hashedPassword
           });
   
           return user.save();
+          
         },
       },
       // Delete a client
-      deleteUser: {
+      login : {
         type: UserType,
         args: {
-          id: { type: GraphQLNonNull(GraphQLID) },
+          email: { type: GraphQLNonNull(GraphQLString) },
+          password: { type: GraphQLNonNull(GraphQLString) },
         },
-        resolve(parent, args) {
-          Blog.find({ clientId: args.id }).then((blogs) => {
-            blogs.forEach((blog) => {
-              blog.remove();
-            });
-          });
-  
-          return User.findByIdAndRemove(args.id);
+        async resolve  (parent, args)  {
+
+    
+          const existingUser = await User.findOne({
+              email : args.email,
+          })
+
+          // console.log(existingUser)
+
+          if (!existingUser) {
+            return {
+              code: 400,
+              success: false,
+              message: 'Duplicated username or email',
+            }
+          }
+          
+          const passwordValid = await argon2.verify(existingUser.password, args.password)
+
+          if (!passwordValid)
+            return {
+              code: 400,
+              success: false,
+              message: 'Wrong password',
+              errors: [{ field: 'password', message: 'Wrong password' }]
+            }
+          
+
+            return existingUser
         },
+
+       
       },
       // Add a project
       addBlog: {
